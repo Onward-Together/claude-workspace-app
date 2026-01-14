@@ -71,6 +71,34 @@ const api = {
       ipcRenderer.on('shortcut:switch-tab', handler)
       return () => ipcRenderer.removeListener('shortcut:switch-tab', handler)
     }
+  },
+
+  // Update operations
+  update: {
+    download: () => ipcRenderer.invoke('update:download'),
+    install: () => ipcRenderer.invoke('update:install'),
+    onAvailable: (callback: (info: { version: string }) => void) => {
+      const handler = (_event: Electron.IpcRendererEvent, info: { version: string }) =>
+        callback(info)
+      ipcRenderer.on('update-available', handler)
+      return () => ipcRenderer.removeListener('update-available', handler)
+    },
+    onDownloadProgress: (
+      callback: (progress: { percent: number; transferred: number; total: number }) => void
+    ) => {
+      const handler = (
+        _event: Electron.IpcRendererEvent,
+        progress: { percent: number; transferred: number; total: number }
+      ) => callback(progress)
+      ipcRenderer.on('update-download-progress', handler)
+      return () => ipcRenderer.removeListener('update-download-progress', handler)
+    },
+    onDownloaded: (callback: (info: { version: string }) => void) => {
+      const handler = (_event: Electron.IpcRendererEvent, info: { version: string }) =>
+        callback(info)
+      ipcRenderer.on('update-downloaded', handler)
+      return () => ipcRenderer.removeListener('update-downloaded', handler)
+    }
   }
 }
 

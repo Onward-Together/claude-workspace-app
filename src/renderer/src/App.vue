@@ -6,7 +6,7 @@ import { useTabsStore } from './stores/tabs'
 import Sidebar from './components/layout/Sidebar.vue'
 import MainContent from './components/layout/MainContent.vue'
 import FolderBrowser from './components/modals/FolderBrowser.vue'
-import FirstTimeSetup from './components/setup/FirstTimeSetup.vue'
+import UpdateNotification from './components/UpdateNotification.vue'
 
 const settingsStore = useSettingsStore()
 const historyStore = useHistoryStore()
@@ -126,5 +126,8 @@ onUnmounted(() => {
       @close="showFolderBrowser = false"
       @select="handleFolderSelect"
     />
+
+    <!-- Update Notification -->
+    <UpdateNotification />
   </div>
 </template>

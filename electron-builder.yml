@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: claude-workspace-app
+productName: Claude Workspace
 directories:
   buildResources: build
 files:
@@ -30,6 +30,8 @@ mac:
     NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  # Disable code signing for now (no Apple Developer Account)
+  identity: null
   notarize: false
   hardenedRuntime: false
   gatekeeperAssess: false
@@ -46,5 +48,7 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: Onward-Together
+  repo: claude-workspace-app
+  releaseType: release

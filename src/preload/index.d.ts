@@ -57,6 +57,15 @@ export interface Api {
     prevTab: (callback: () => void) => () => void
     switchTab: (callback: (index: number) => void) => () => void
   }
+  update: {
+    download: () => Promise<void>
+    install: () => Promise<void>
+    onAvailable: (callback: (info: { version: string }) => void) => () => void
+    onDownloadProgress: (
+      callback: (progress: { percent: number; transferred: number; total: number }) => void
+    ) => () => void
+    onDownloaded: (callback: (info: { version: string }) => void) => () => void
+  }
 }
 
 declare global {

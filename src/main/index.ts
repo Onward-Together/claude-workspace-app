@@ -1,6 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { autoUpdater } from 'electron-updater'
 import icon from '../../resources/icon.png?asset'
 
 import {
@@ -164,6 +165,61 @@ function registerGlobalShortcuts(): void {
   }
 }
 
+function setupAutoUpdater(): void {
+  // Disable auto-download to show user notification first
+  autoUpdater.autoDownload = false
+  autoUpdater.autoInstallOnAppQuit = true
+
+  // Check for updates on app start (after 3 seconds)
+  setTimeout(() => {
+    if (!is.dev) {
+      autoUpdater.checkForUpdates()
+    }
+  }, 3000)
+
+  // Check for updates every 30 minutes
+  setInterval(
+    () => {
+      if (!is.dev) {
+        autoUpdater.checkForUpdates()
+      }
+    },
+    30 * 60 * 1000
+  )
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info.version)
+    mainWindow?.webContents.send('update-available', info)
+  })
+
+  autoUpdater.on('update-not-available', () => {
+    console.log('No updates available')
+  })
+
+  autoUpdater.on('error', (err) => {
+    console.error('Update error:', err)
+  })
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    mainWindow?.webContents.send('update-download-progress', progressObj)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded:', info.version)
+    mainWindow?.webContents.send('update-downloaded', info)
+  })
+
+  // Handle download update request from renderer
+  ipcMain.handle('update:download', () => {
+    autoUpdater.downloadUpdate()
+  })
+
+  // Handle install update request from renderer
+  ipcMain.handle('update:install', () => {
+    autoUpdater.quitAndInstall(false, true)
+  })
+}
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.claude-workspace')
 
@@ -174,6 +230,7 @@ app.whenReady().then(() => {
   registerIpcHandlers()
   createWindow()
   registerGlobalShortcuts()
+  setupAutoUpdater()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

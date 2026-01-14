@@ -57,7 +57,8 @@ export function useTerminal(tab: Ref<Tab>, containerRef: Ref<HTMLElement | null>
         brightCyan: '#22d3ee',
         brightWhite: '#f9fafb'
       },
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      // OS-specific monospace fonts: SF Mono/Menlo (macOS), Consolas (Windows), Liberation Mono (Linux)
+      fontFamily: '"SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       fontSize: 14,
       lineHeight: 1.2,
       cursorBlink: true,

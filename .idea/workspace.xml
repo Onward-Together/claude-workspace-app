@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7bf59223-304e-4baf-9ba1-9b68c9110d00" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/pty-manager.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/pty-manager.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/storage.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/storage.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +77,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1768302586289</updated>
-      <workItem from="1768302587323" duration="19641000" />
+      <workItem from="1768302587323" duration="20021000" />
     </task>
     <servers />
   </component>

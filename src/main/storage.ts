@@ -114,7 +114,7 @@ export function addToHistory(path: string): HistoryItem[] {
   const name = basename(path) || path
 
   // Remove existing entry for this path
-  const filtered = history.filter((item) => item.path !== path)
+  // const filtered = history.filter((item) => item.path !== path)
 
   // Add new entry at the beginning
   const newItem: HistoryItem = {
@@ -124,7 +124,7 @@ export function addToHistory(path: string): HistoryItem[] {
     title: 'Untitled',
     timestamp: Date.now()
   }
-  const updated = [newItem, ...filtered].slice(0, MAX_HISTORY_ITEMS)
+  const updated = [newItem, ...history].slice(0, MAX_HISTORY_ITEMS)
 
   writeJsonFile('history.json', updated)
   return updated

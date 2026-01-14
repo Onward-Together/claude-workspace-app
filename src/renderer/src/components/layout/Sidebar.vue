@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useSettingsStore } from '../../stores/settings'
@@ -26,13 +26,16 @@ function toggleSidebar() {
     ]"
   >
     <!-- Header -->
-    <div class="flex items-center justify-between p-3 border-b border-gray-700">
+    <div class="flex items-center justify-between h-10 !px-1 border-b border-gray-700">
       <span v-if="!isCollapsed" class="text-sm font-semibold text-gray-200">Claude Workspace</span>
       <button
         class="p-1 rounded hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
         @click="toggleSidebar"
       >
-        <Icon :icon="isCollapsed ? 'lucide:panel-left-open' : 'lucide:panel-left-close'" class="w-5 h-5" />
+        <Icon
+          :icon="isCollapsed ? 'lucide:panel-left-open' : 'lucide:panel-left-close'"
+          class="w-5 h-5"
+        />
       </button>
     </div>
 
@@ -49,14 +52,14 @@ function toggleSidebar() {
         title="Working Folder"
         @click="toggleSidebar"
       >
-        <Icon icon="lucide:folder" class="w-5 h-5" />
+        <Icon class="w-5 h-5" icon="lucide:folder" />
       </button>
       <button
         class="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
         title="History"
         @click="toggleSidebar"
       >
-        <Icon icon="lucide:history" class="w-5 h-5" />
+        <Icon class="w-5 h-5" icon="lucide:history" />
       </button>
     </div>
   </aside>

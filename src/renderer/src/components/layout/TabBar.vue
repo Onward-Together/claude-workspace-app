@@ -19,7 +19,7 @@ function handleNewTab() {
 </script>
 
 <template>
-  <div class="flex items-center bg-gray-800 border-b border-gray-700 h-10">
+  <div class="flex items-center bg-gray-800 border-b border-gray-700 h-10 px-1">
     <!-- Tabs -->
     <div class="flex-1 flex items-center overflow-x-auto">
       <div
@@ -28,18 +28,13 @@ function handleNewTab() {
         :class="[
           'flex items-center gap-2 pl-3 pr-1 py-1.5 cursor-pointer border-r border-gray-700 min-w-0 max-w-52',
           'hover:bg-gray-700 transition-colors group relative',
-          tab.isActive
-            ? 'bg-gray-900 text-white'
-            : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+          tab.isActive ? 'bg-gray-900 text-white' : 'bg-gray-800 text-gray-400 hover:text-gray-200'
         ]"
         @click="tabsStore.setActiveTab(tab.id)"
       >
         <Icon icon="lucide:terminal" class="w-4 h-4 flex-shrink-0 text-blue-400" />
         <span class="truncate text-sm flex-1">{{ tab.name }}</span>
-        <span
-          v-if="index < 9"
-          class="text-[10px] text-gray-600 flex-shrink-0 font-mono"
-        >
+        <span v-if="index < 9" class="text-[10px] text-gray-600 flex-shrink-0 font-mono">
           {{ index + 1 }}
         </span>
         <!-- Close Button - Always visible -->

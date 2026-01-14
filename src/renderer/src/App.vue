@@ -110,14 +110,8 @@ onUnmounted(() => {
     <div class="text-gray-400">Loading...</div>
   </div>
 
-  <!-- First Time Setup -->
-  <FirstTimeSetup
-    v-else-if="settingsStore.isFirstTime"
-    @complete="init"
-  />
-
   <!-- Main App -->
-  <div v-else class="h-screen flex bg-gray-900 text-gray-100 overflow-hidden">
+  <div class="h-screen flex bg-gray-900 text-gray-100 overflow-hidden">
     <!-- Sidebar -->
     <Sidebar @change-folder="openFolderBrowserForChange" />
 

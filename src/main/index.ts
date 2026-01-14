@@ -1,24 +1,54 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import { createPtySession, writeToPty, resizePty, closePty, closeAllPty } from './pty-manager'
+import {
+  getSettings,
+  saveSettings,
+  isFirstTime,
+  getHistory,
+  addToHistory,
+  updateHistoryTitle,
+  clearHistory
+} from './storage'
+import { browseDirectory, getHomeDirectory } from './fs-utils'
+
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+  const settings = getSettings()
+
+  mainWindow = new BrowserWindow({
+    width: settings.windowBounds?.width || 1200,
+    height: settings.windowBounds?.height || 800,
+    x: settings.windowBounds?.x,
+    y: settings.windowBounds?.y,
+    minWidth: 800,
+    minHeight: 600,
     show: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
+    backgroundColor: '#111827',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
+  })
+
+  // Save window bounds on close
+  mainWindow.on('close', () => {
+    if (mainWindow) {
+      const bounds = mainWindow.getBounds()
+      saveSettings({ windowBounds: bounds })
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -26,8 +56,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -35,40 +63,114 @@ function createWindow(): void {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+function registerIpcHandlers(): void {
+  // PTY handlers
+  ipcMain.handle('pty:create', (_event, { id, cwd }) => {
+    if (!mainWindow) return null
+    return createPtySession(id, cwd, mainWindow)
+  })
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+  ipcMain.on('pty:input', (_event, { id, data }) => {
+    writeToPty(id, data)
+  })
+
+  ipcMain.on('pty:resize', (_event, { id, cols, rows }) => {
+    resizePty(id, cols, rows)
+  })
+
+  ipcMain.on('pty:close', (_event, { id }) => {
+    closePty(id)
+  })
+
+  // File system handlers
+  ipcMain.handle('fs:browse', (_event, { path, showHidden }) => {
+    return browseDirectory(path, showHidden)
+  })
+
+  ipcMain.handle('fs:home', () => {
+    return getHomeDirectory()
+  })
+
+  // Settings handlers
+  ipcMain.handle('settings:get', () => {
+    return getSettings()
+  })
+
+  ipcMain.handle('settings:set', (_event, settings) => {
+    return saveSettings(settings)
+  })
+
+  ipcMain.handle('settings:isFirstTime', () => {
+    return isFirstTime()
+  })
+
+  // History handlers
+  ipcMain.handle('history:get', () => {
+    return getHistory()
+  })
+
+  ipcMain.handle('history:add', (_event, { path }) => {
+    return addToHistory(path)
+  })
+
+  ipcMain.handle('history:update', (_event, { id, title }) => {
+    return updateHistoryTitle(id, title)
+  })
+
+  ipcMain.handle('history:clear', () => {
+    clearHistory()
+    return []
+  })
+}
+
+function registerGlobalShortcuts(): void {
+  // Register shortcuts that work when app is focused
+  if (mainWindow) {
+    mainWindow.webContents.on('before-input-event', (_event, input) => {
+      // Let the renderer handle these shortcuts
+      const isModifier = process.platform === 'darwin' ? input.meta : input.control
+
+      if (isModifier && input.key.toLowerCase() === 't') {
+        mainWindow?.webContents.send('shortcut:new-tab')
+      } else if (isModifier && input.key.toLowerCase() === 'w') {
+        mainWindow?.webContents.send('shortcut:close-tab')
+      } else if (isModifier && input.key === 'Tab') {
+        if (input.shift) {
+          mainWindow?.webContents.send('shortcut:prev-tab')
+        } else {
+          mainWindow?.webContents.send('shortcut:next-tab')
+        }
+      } else if (isModifier && /^[1-9]$/.test(input.key)) {
+        mainWindow?.webContents.send('shortcut:switch-tab', parseInt(input.key) - 1)
+      }
+    })
+  }
+}
+
+app.whenReady().then(() => {
+  electronApp.setAppUserModelId('com.claude-workspace')
+
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
+  registerIpcHandlers()
   createWindow()
+  registerGlobalShortcuts()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  closeAllPty()
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
+  closeAllPty()
+})

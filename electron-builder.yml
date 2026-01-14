@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: my-app
+productName: claude-workspace-app
 directories:
   buildResources: build
 files:
@@ -12,20 +12,27 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: my-app
+  executableName: claude-workspace-app
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  target:
+    - target: dmg
+      arch: arm64
+    - target: zip
+      arch: arm64
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+    NSCameraUsageDescription: Application requests access to the device's camera.
+    NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
+  hardenedRuntime: false
+  gatekeeperAssess: false
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:

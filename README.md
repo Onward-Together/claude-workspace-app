@@ -1,4 +1,4 @@
-# my-app
+# claude-workspace-app
 
 An Electron application with Vue and TypeScript
 

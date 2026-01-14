@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: Claude Workspace
+productName: O-Ai
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: claude-workspace-app
+  executableName: o-ai
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

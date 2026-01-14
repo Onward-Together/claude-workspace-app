@@ -5,6 +5,7 @@ interface PtySession {
   id: string
   ptyProcess: pty.IPty
   cwd: string
+  window: BrowserWindow | null
 }
 
 const sessions = new Map<string, PtySession>()
@@ -13,7 +14,6 @@ function getShell(): string {
   if (process.platform === 'win32') {
     return 'powershell.exe'
   }
-  // Use user's default shell or fallback to zsh/bash
   return process.env.SHELL || '/bin/zsh'
 }
 
@@ -24,7 +24,6 @@ export function createPtySession(
 ): { id: string; pid: number } {
   const shell = getShell()
 
-  // Set UTF-8 locale for Vietnamese and other Unicode support
   const env: { [key: string]: string } = {
     ...(process.env as { [key: string]: string }),
     LANG: 'en_US.UTF-8',
@@ -41,25 +40,30 @@ export function createPtySession(
     encoding: 'utf8'
   })
 
-  sessions.set(id, { id, ptyProcess, cwd })
+  const session: PtySession = { id, ptyProcess, cwd, window }
+  sessions.set(id, session)
 
   ptyProcess.onData((data) => {
-    try {
-      if (!window.isDestroyed()) {
-        window.webContents.send('pty:output', { id, data })
+    const currentSession = sessions.get(id)
+    if (currentSession && currentSession.window && !currentSession.window.isDestroyed()) {
+      try {
+        currentSession.window.webContents.send('pty:output', { id, data })
+      } catch (error) {
+        console.error('Error sending pty output:', error)
+        // Null out the window reference to prevent further attempts
+        currentSession.window = null
       }
-    } catch {
-      // Window already closed, ignore
     }
   })
 
   ptyProcess.onExit(({ exitCode }) => {
-    try {
-      if (!window.isDestroyed()) {
-        window.webContents.send('pty:exit', { id, exitCode })
+    const currentSession = sessions.get(id)
+    if (currentSession && currentSession.window && !currentSession.window.isDestroyed()) {
+      try {
+        currentSession.window.webContents.send('pty:exit', { id, exitCode })
+      } catch (error) {
+        console.error('Error sending pty exit:', error)
       }
-    } catch {
-      // Window already closed, ignore
     }
     sessions.delete(id)
   })
@@ -69,25 +73,34 @@ export function createPtySession(
 
 export function writeToPty(id: string, data: string): void {
   const session = sessions.get(id)
-  if (session) {
-    session.ptyProcess.write(data)
+  if (session && session.ptyProcess) {
+    try {
+      session.ptyProcess.write(data)
+    } catch (error) {
+      console.error('Error writing to pty:', error)
+    }
   }
 }
 
 export function resizePty(id: string, cols: number, rows: number): void {
   const session = sessions.get(id)
-  if (session) {
-    session.ptyProcess.resize(cols, rows)
+  if (session && session.ptyProcess) {
+    try {
+      session.ptyProcess.resize(cols, rows)
+    } catch (error) {
+      console.error('Error resizing pty:', error)
+    }
   }
 }
 
 export function closePty(id: string): void {
   const session = sessions.get(id)
   if (session) {
+    session.window = null // Clear window reference first
     try {
       session.ptyProcess.kill()
-    } catch {
-      // Process already exited, ignore
+    } catch (error) {
+      console.error('Error closing pty:', error)
     }
     sessions.delete(id)
   }
@@ -95,13 +108,21 @@ export function closePty(id: string): void {
 
 export function closeAllPty(): void {
   sessions.forEach((session) => {
+    session.window = null // Clear window references
     try {
       session.ptyProcess.kill()
-    } catch {
-      // Process already exited, ignore
+    } catch (error) {
+      console.error('Error killing pty process:', error)
     }
   })
   sessions.clear()
+}
+
+// New function to invalidate window references
+export function invalidateWindowReferences(): void {
+  sessions.forEach((session) => {
+    session.window = null
+  })
 }
 
 export function getPtySession(id: string): PtySession | undefined {

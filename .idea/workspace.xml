@@ -5,44 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7bf59223-304e-4baf-9ba1-9b68c9110d00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/fs-utils.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/pty-manager.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/storage.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/layout/MainContent.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/layout/Sidebar.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/layout/TabBar.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/modals/ConfirmDialog.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/modals/FolderBrowser.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/setup/FirstTimeSetup.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/sidebar/HistoryList.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/sidebar/SidebarSection.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/sidebar/WorkingFolder.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/terminal/TerminalContainer.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/components/terminal/TerminalTab.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/composables/useTerminal.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/stores/history.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/stores/settings.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/stores/tabs.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/src/types/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/entitlements.mac.plist" beforeDir="false" afterPath="$PROJECT_DIR$/build/entitlements.mac.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icon.icns" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev-app-update.yml" beforeDir="false" afterPath="$PROJECT_DIR$/dev-app-update.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/electron-builder.yml" beforeDir="false" afterPath="$PROJECT_DIR$/electron-builder.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nuxt3-electron.md" beforeDir="false" afterPath="$PROJECT_DIR$/nuxt3-electron.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/preload/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/preload/index.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/preload/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/preload/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/assets/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/assets/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/components/Versions.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/pty-manager.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/pty-manager.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +79,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1768302586289</updated>
-      <workItem from="1768302587323" duration="18691000" />
+      <workItem from="1768302587323" duration="19641000" />
     </task>
     <servers />
   </component>

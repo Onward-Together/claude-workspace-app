@@ -3,7 +3,14 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-import { createPtySession, writeToPty, resizePty, closePty, closeAllPty } from './pty-manager'
+import {
+  createPtySession,
+  writeToPty,
+  resizePty,
+  closePty,
+  closeAllPty,
+  invalidateWindowReferences
+} from './pty-manager'
 import {
   getSettings,
   saveSettings,
@@ -16,6 +23,7 @@ import {
 import { browseDirectory, getHomeDirectory } from './fs-utils'
 
 let mainWindow: BrowserWindow | null = null
+let isQuitting = false
 
 function createWindow(): void {
   const settings = getSettings()
@@ -43,12 +51,19 @@ function createWindow(): void {
     mainWindow?.show()
   })
 
-  // Save window bounds on close
+  // Handle close event - save bounds and cleanup
   mainWindow.on('close', () => {
-    if (mainWindow) {
+    if (mainWindow && !isQuitting) {
       const bounds = mainWindow.getBounds()
       saveSettings({ windowBounds: bounds })
+
+      // Invalidate window references in pty sessions
+      invalidateWindowReferences()
     }
+  })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -71,11 +86,15 @@ function registerIpcHandlers(): void {
   })
 
   ipcMain.on('pty:input', (_event, { id, data }) => {
-    writeToPty(id, data)
+    if (!isQuitting) {
+      writeToPty(id, data)
+    }
   })
 
   ipcMain.on('pty:resize', (_event, { id, cols, rows }) => {
-    resizePty(id, cols, rows)
+    if (!isQuitting) {
+      resizePty(id, cols, rows)
+    }
   })
 
   ipcMain.on('pty:close', (_event, { id }) => {
@@ -124,10 +143,8 @@ function registerIpcHandlers(): void {
 }
 
 function registerGlobalShortcuts(): void {
-  // Register shortcuts that work when app is focused
   if (mainWindow) {
     mainWindow.webContents.on('before-input-event', (_event, input) => {
-      // Let the renderer handle these shortcuts
       const isModifier = process.platform === 'darwin' ? input.meta : input.control
 
       if (isModifier && input.key.toLowerCase() === 't') {
@@ -163,7 +180,15 @@ app.whenReady().then(() => {
   })
 })
 
+// Handle before-quit to set flag and cleanup
+app.on('before-quit', () => {
+  isQuitting = true
+  invalidateWindowReferences()
+  closeAllPty()
+})
+
 app.on('window-all-closed', () => {
+  invalidateWindowReferences()
   closeAllPty()
   if (process.platform !== 'darwin') {
     app.quit()
